@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - EsophAI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #718096;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .image-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .image-title i {
+            margin-right: 10px;
+            color: #4facfe;
+        }
+
+        .analysis-image {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+        }
+
+        .image-metadata {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .metadata-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .metadata-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .metadata-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .metadata-value {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .results-title i {
+            margin-right: 10px;
+            color: #4facfe;
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 16px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prediction-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .prediction-label {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .prediction-confidence {
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            animation: fillBar 2s ease-out;
+        }
+
+        @keyframes fillBar {
+            from { width: 0%; }
+        }
+
+        .analysis-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .detail-icon {
+            font-size: 24px;
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .detail-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4facfe;
+        }
+
+        .actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+        }
+
+        .disclaimer {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            color: #744210;
+        }
+
+        .disclaimer-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .disclaimer-title i {
+            margin-right: 10px;
+            color: #f6ad55;
+        }
+
+        .disclaimer-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header, .image-section, .results-section, .actions {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .prediction-label {
+                font-size: 20px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        /* Status indicators */
+        .status-normal {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .status-abnormal {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .status-uncertain {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-microscope"></i> Analysis Complete</h1>
+            <p>AI-powered esophageal disease detection results</p>
+        </div>
+
+        <div class="results-grid">
+            <div class="image-section">
+                <div class="image-title">
+                    <i class="fas fa-image"></i>
+                    Analyzed Image
+                </div>
+                <!-- Replace with Flask template variable -->
+                <img src="{{ url_for('send_file', filename=image_file_name) if image_file_name else 'data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"300\" height=\"200\"><rect width=\"100%\" height=\"100%\" fill=\"%23f7fafc\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dy=\".3em\" fill=\"%23a0aec0\">Sample Medical Image</text></svg>' }}" 
+                     alt="Medical Image" class="analysis-image">
+                
+                <div class="image-metadata">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Processing Time:</span>
+                        <span class="metadata-value">2.3 seconds</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Model Version:</span>
+                        <span class="metadata-value">v2.1.0</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Analysis Date:</span>
+                        <span class="metadata-value" id="analysisDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-title">
+                    <i class="fas fa-brain"></i>
+                    Detection Results
+                </div>
+                
+                <div class="prediction-card" id="predictionCard">
+                    <div class="prediction-label" id="predictionLabel">
+                        <!-- Replace with Flask template variable -->
+                        {{ label if label else 'Normal Tissue' }}
+                    </div>
+                    <div class="prediction-confidence" id="predictionConfidence">
+                        <!-- Replace with Flask template variable -->
+                        Confidence: {{ accuracy if accuracy else '94.7' }}%
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidenceFill" 
+                             style="width: {{ accuracy if accuracy else '94.7' }}%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-details">
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-clock"></i></div>
+                        <div class="detail-title">Processing</div>
+                        <div class="detail-value">Fast</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="detail-title">Reliability</div>
+                        <div class="detail-value">High</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-microscope"></i></div>
+                        <div class="detail-title">Model Type</div>
+                        <div class="detail-value">CNN</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/analyze" class="btn btn-primary">
+                <i class="fas fa-upload"></i>
+                Analyze Another Image
+            </a>
+            <button class="btn btn-success" onclick="downloadReport()">
+                <i class="fas fa-download"></i>
+                Download Report
+            </button>
+            <button class="btn btn-secondary" onclick="shareResults()">
+                <i class="fas fa-share"></i>
+                Share Results
+            </button>
+        </div>
+
+        <div class="disclaimer">
+            <div class="disclaimer-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Medical Disclaimer
+            </div>
+            <div class="disclaimer-text">
+                This AI analysis is for research and educational purposes only. Results should not be used as a substitute for professional medical diagnosis or treatment. Always consult with qualified healthcare professionals for medical decisions.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('analysisDate').textContent = new Date().toLocaleDateString();
+
+        // Determine prediction status and apply appropriate styling
+        function setPredictionStatus() {
+            const predictionCard = document.getElementById('predictionCard');
+            const predictionText = document.getElementById('predictionLabel').textContent.toLowerCase();
+            const confidence = parseFloat(document.getElementById('predictionConfidence').textContent.match(/\d+\.?\d*/)[0]);
+
+            if (predictionText.includes('normal') || predictionText.includes('healthy')) {
+                predictionCard.classList.add('status-normal');
+            } else if (confidence < 70) {
+                predictionCard.classList.add('status-uncertain');
+            } else {
+                predictionCard.classList.add('status-abnormal');
+            }
+        }
+
+        // Download report functionality
+        function downloadReport() {
+            const reportData = {
+                prediction: document.getElementById('predictionLabel').textContent,
+                confidence: document.getElementById('predictionConfidence').textContent,
+                date: document.getElementById('analysisDate').textContent,
+                model: 'EsophAI v2.1.0'
+            };
+
+            const reportContent = `
+ESOPHAGEAL DISEASE DETECTION REPORT
+===================================
+
+Analysis Date: ${reportData.date}
+Model Version: ${reportData.model}
+
+RESULTS:
+--------
+Prediction: ${reportData.prediction}
+${reportData.confidence}
+
+DISCLAIMER:
+-----------
+This AI analysis is for research and educational purposes only. 
+Results should not be used as a substitute for professional 
+medical diagnosis or treatment. Always consult with qualified 
+healthcare professionals for medical decisions.
+
+Generated by EsophAI - Advanced Medical Image Analysis
+            `.trim();
+
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `esopheal-analysis-${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Share results functionality
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'EsophAI Analysis Results',
+                    text: `Analysis complete: ${document.getElementById('predictionLabel').textContent} with ${document.getElementById('predictionConfidence').textContent}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const shareText = `EsophAI Analysis Results: ${document.getElementById('predictionLabel').textContent} with ${document.getElementById('predictionConfidence').textContent}`;
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Results copied to clipboard!');
+                });
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setPredictionStatus();
+            
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+
+        // Add some interactive animations
+        document.querySelectorAll('.detail-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Esophageal AI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .login-form {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            padding-left: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        .form-input:focus + .input-icon {
+            color: #4facfe;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4facfe;
+        }
+
+        .forgot-password {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #3182ce;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn.loading {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .register-link {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .register-link a:hover {
+            color: #3182ce;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border-color: #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #c53030;
+            border-color: #feb2b2;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2a69ac;
+            border-color: #90cdf4;
+        }
+
+        .demo-credentials {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .demo-credentials h4 {
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .demo-credentials p {
+            margin: 4px 0;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+            
+            .login-header, .login-form {
+                padding: 30px 20px;
+            }
+            
+            .login-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="fas fa-microscope"></i> Esophageal AI</h1>
+            <p>Medical Image Analysis Platform</p>
+        </div>
+        
+        <div class="login-form">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Demo credentials (remove in production) -->
+            <div class="demo-credentials">
+                <h4><i class="fas fa-key"></i> Demo Credentials</h4>
+                <p><strong>Admin:</strong> admin / password123</p>
+                <p><strong>User:</strong> user / password123</p>
+            </div>
+            
+            <form method="POST" id="loginForm">
+                <div class="form-group">
+                    <label for="username_or_email" class="form-label">Username or Email</label>
+                    <input type="text" 
+                           id="username_or_email" 
+                           name="username_or_email" 
+                           class="form-input" 
+                           placeholder="Enter your username or email"
+                           required>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           class="form-input" 
+                           placeholder="Enter your password"
+                           required>
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+                
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember" value="1">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <span id="btnText"><i class="fas fa-sign-in-alt"></i> Sign In</span>
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div class="register-link">
+                Don't have an account?
+                <a href="{{ url_for('register') }}">Create one here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const loginBtn = document.getElementById('loginBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+            
+            loginBtn.classList.add('loading');
+            loadingSpinner.style.display = 'inline-block';
+            btnText.innerHTML = 'Signing in...';
+            loginBtn.disabled = true;
+        });
+
+        // Auto-focus first input
+        document.getElementById('username_or_email').focus();
+
+        // Add input animations
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.2s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Demo credentials auto-fill (remove in production)
+        document.querySelector('.demo-credentials').addEventListener('click', function(e) {
+            if (e.target.textContent.includes('admin')) {
+                document.getElementById('username_or_email').value = 'admin';
+                document.getElementById('password').value = 'password123';
+            } else if (e.target.textContent.includes('user')) {
+                document.getElementById('username_or_email').value = 'user';
+                document.getElementById('password').value = 'password123';
+            }
+        });
+    </script>
+</body>
+</html>
